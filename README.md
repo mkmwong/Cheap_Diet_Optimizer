@@ -6,4 +6,4 @@ Food price data could be found [here (CNPP 2003-2004)](https://www.fns.usda.gov/
 
 Vitamin and mineral requirement could be found [here](https://www.accessdata.fda.gov/scripts/interactivenutritionfactslabel/assets/InteractiveNFL_Vitamins&MineralsChart_March2020.pdf).
 
-Demo can be found here: https://cheap-diet-optimizer.herokuapp.com/diet_out.
+Demo can be found [here](https://cheap-diet-optimizer.herokuapp.com) .
