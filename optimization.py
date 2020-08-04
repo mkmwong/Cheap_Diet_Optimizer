@@ -139,13 +139,13 @@ def others_setup(prob,food_vars, diet_type, idx):
 ###
 ###
 def format_output(prob_var, food_des, portion_weight):
-    ret_str = ''
+    ret_str = []
     #print(prob_var)
     #print(prob_var[1].varValue)
     for i in range(len(food_des)):
         if prob_var[i].varValue > 0:
             weight = round(prob_var[i].varValue * portion_weight[i])
-            ret_str = ret_str + food_des[i] + ": " + str(weight) + 'g <br>'
+            ret_str.append( str(food_des[i] + ": " + str(weight) + 'g'))
     return(ret_str)
 
 ###
@@ -172,11 +172,11 @@ def include_item(prob, food_vars, idx):
 
 def diet_problem(diet_type,item_inc=None):
     idx = None
-    print(item_inc)
+#    print(item_inc)
     if item_inc != 'No Selection':
         idx = list(df['Main.food.description']).index(item_inc)
         if(detect_conflict(diet_type, item_inc)):
-            return('There is conflict with the seletion. Please try again.')
+            return('There is conflict with your selections. Please try again.')
 
     prob = LpProblem('Cheap Diet Problem',  LpMinimize)
     food_vars = LpVariable.dicts('food', food, lowBound = 0, upBound = 10, cat = 'Continuous')
@@ -187,20 +187,22 @@ def diet_problem(diet_type,item_inc=None):
         include_item(prob, food_vars, idx)
     others_setup(prob,food_vars,diet_type, idx)
     prob.solve()
-    ret_str = ''
+    ret_str = []
     if (LpStatus[prob.status] == 'Optimal'):
-        ret_str = ret_str + format_output(prob.variables(),df['Main.food.description'],df['Portion.weight'])
+ #       print(ret_str)
+        ret_str.extend(format_output(prob.variables(),df['Main.food.description'],df['Portion.weight']))
+  #      print(ret_str)
         #for v in prob.variables():
             #if v.varValue > 0 and 'selected' not in v.name:
                 #ret_str = ret_str + v.name +  " = " +  str(round(v.varValue,2)) + " <br/>"
-        ret_str = ret_str + "The price for a day's diet is: $" + str(round(pulp.value(prob.objective),2))
+        ret_str.append("The price for a day's diet is: $" + str(round(pulp.value(prob.objective),2)))
     else:
         ret_str = "Diet is infeasible."
     #for i in range(len(prob.variables())):
     #    print(prob.variables()[i])
-    print(ret_str)
+   # print(ret_str)
     return(ret_str)
-#diet_problem('Regular', 'Apple, raw')
+diet_problem('Regular', 'Apple, raw')
 #diet_problem('Vegetarian')
 #diet_problem('Vegan')
 #diet_problem('Pescatarian')

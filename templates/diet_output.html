@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dropdown</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheap diet optimizer</title>
     <link rel="stylesheet" type="text/css" href ="{{ url_for('static',filename='styles/CDOstyle.css') }}">
 </head>
 <body>
@@ -23,6 +24,13 @@
     <input class="btn" type="Submit" value="submit"> </input>
 </form>
 <h4> Here is your optimal diet: </h4>
-<p>{% autoescape false %} {{string}} {% endautoescape %}</p>
+<ul>
+{% for item in string %}
+{% if not loop.last %}
+<li>{{item}}</li>
+{% endif %}
+{% endfor %}
+</ul>
+<p> {{string|last}}</p>
 </body>
 </html>
