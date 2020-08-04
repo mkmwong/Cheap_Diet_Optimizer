@@ -17,6 +17,7 @@
     </select>
     <h4> Then, select an item to include (optional): </h4>
     <select name=item_include placeholder="Select item to include">
+
         {% for item in item_include %}
         <option value= "{{item}}" SELECTED>{{item}}</option>"
         {% endfor %}

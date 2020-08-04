@@ -24,13 +24,18 @@
     <input class="btn" type="Submit" value="submit"> </input>
 </form>
 <h4> Here is your optimal diet: </h4>
-<ul>
-{% for item in string %}
-{% if not loop.last %}
-<li>{{item}}</li>
+{% if string|length > 1 %}
+    <ul>
+    {% for item in string %}
+        {% if not loop.last %}
+            <li>{{item}}</li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+    <p> {{string|last}}</p>
+{% else %}
+    <p> {{string|first}} </p>
 {% endif %}
-{% endfor %}
-</ul>
-<p> {{string|last}}</p>
+
 </body>
 </html>

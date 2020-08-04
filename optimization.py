@@ -176,7 +176,7 @@ def diet_problem(diet_type,item_inc=None):
     if item_inc != 'No Selection':
         idx = list(df['Main.food.description']).index(item_inc)
         if(detect_conflict(diet_type, item_inc)):
-            return('There is conflict with your selections. Please try again.')
+            return(['There is conflict with your selections. Please try again.'])
 
     prob = LpProblem('Cheap Diet Problem',  LpMinimize)
     food_vars = LpVariable.dicts('food', food, lowBound = 0, upBound = 10, cat = 'Continuous')
@@ -197,7 +197,7 @@ def diet_problem(diet_type,item_inc=None):
                 #ret_str = ret_str + v.name +  " = " +  str(round(v.varValue,2)) + " <br/>"
         ret_str.append("The price for a day's diet is: $" + str(round(pulp.value(prob.objective),2)))
     else:
-        ret_str = "Diet is infeasible."
+        ret_str = ["Diet is infeasible."]
     #for i in range(len(prob.variables())):
     #    print(prob.variables()[i])
    # print(ret_str)
