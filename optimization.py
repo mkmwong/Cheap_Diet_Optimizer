@@ -178,7 +178,8 @@ def include_or_exclude_item(prob, food_vars, idx, type_it):
         prob += food_vars[df['interaction'][idx]] >= 0.5 * selected[df['interaction'][idx]] , df['interaction'][idx]+'Min. serving size restriction'
     elif type_it == 'exclude':
         prob += selected[df['interaction'][idx]] == 0
-###
+
+### For excluding item that people are allergic to 
 def exclude_allergies(prob, food_vars, group):
     idx = []
     if group == 'Dairy':  
