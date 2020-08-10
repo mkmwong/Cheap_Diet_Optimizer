@@ -4,25 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">    
     <title>Cheap diet optimizer</title>
-    <link rel="stylesheet" type="text/css" href ="{{ url_for('static',filename='styles/CDOstyle.css') }}">
+    <link rel="stylesheet" type="text/css" href ="{{ url_for('static',filename='css/main.css') }}">
 </head>
 <body>
-<h1>Cheap diet optimizer</h1>
-<form class="teamSelection" method="POST" action="/diet_out">
-    <h4> First, choose your diet type: </h4>
-    <select name=diet placeholder="Select your diet">
-        {% for diet in diet %}
-        <option value= "{{diet}}" SELECTED>{{diet}}</option>"
-        {% endfor %}
-    </select>
-    <h4> Then, select an item to include (optional): </h4>
-    <select name=item_include placeholder="Select item to include">
-
-        {% for item in item_include %}
-        <option value= "{{item}}" SELECTED>{{item}}</option>"
-        {% endfor %}
-    </select>
-    <input class="btn" type="Submit" value="submit"> </input>
-</form>
+    <header>
+      <div class="container">
+        <strong><nav>
+          <ul class="menu">
+            <li class="menu"><a class="menu" href="/">Cheap Diet Optimizer</a></li>
+            <li class="menu"><a class="menu" href="/limitations">Limitations</a></li>
+          </ul>
+        </nav></strong>
+      </div>
+    </header>
+<div class="input_form">
+    {% include "content.html" %}
+</div>
+<div class="content">
+    {% block content %}
+    {% endblock %}
+</div>
 </body>
 </html>

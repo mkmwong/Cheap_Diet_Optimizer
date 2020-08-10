@@ -1,0 +1,67 @@
+@import url(http://fonts.googleapis.com/css?family=Merriweather:400,700,900,400italic,700italic,900italic);
+@import url(http://fonts.googleapis.com/css?family=Montserrat:400,700,900,400italic,700italic,900italic);
+* {
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    background-color: #EBB471;
+    color: #8F5A3C;
+}
+
+ul.menu {
+  list-style-type: none;
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  background-color: #EBB471;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+li.menu {
+  /*border-right: 1px solid #bbb;*/
+  float: left;
+}
+
+a.menu {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+.input_form {
+  margin-top: 60px ;
+}
+
+.content {
+  margin-top: 60px ;
+}
+
+.out_item {
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+  font-weight: 100;
+}
+
+option, select {
+  font-size: 16px;
+  background-color: #fff7e8;
+  color:  #8F5A3C;
+  width: 200px;
+  height: 50px;
+  /* for Firefox */
+  -moz-appearance: none;
+  /* for Chrome */
+  -webkit-appearance: none;
+/*  color: rgba(0,0,0,0);*/
+  text-shadow: 0 0 0 #000;
+  border:0px;
+  outline:0px;
+}
+/* For IE10 */
+select::-ms-expand {
+  display: none;
+}
+.container {
+  margin: auto;
+  text-align: center;
+}
+

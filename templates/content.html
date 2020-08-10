@@ -1,0 +1,31 @@
+<div class ="container">
+<form method="POST" action="/diet_out">
+    <h4> First, choose your diet type: </h4>
+    <select name=diet placeholder="Select your diet">
+        {% for diet in diet %}
+        <option value= "{{diet}}" SELECTED>{{diet}}</option>
+        {% endfor %}
+    </select>
+    <h4> Do you have any allergies? (optional):</h4>
+    <select name=allergy placeholder="Select your allergy">
+        {% for allergy in allergy %}
+        <option value = "{{allergy}}" SELECTED>{{allergy}}</option>
+        {% endfor %}
+    </select>
+    <h4> Then, select an item to include (optional): </h4>
+    <select name=item_include placeholder="Select item to include">
+        {% for item in item_include %}
+        <option value= "{{item}}" SELECTED>{{item}}</option>
+        {% endfor %}
+    </select>
+    <h4> You can also select an item to exclude (optional):</h4>
+    <select name=item_exclude placeholder="Select item to exclude">
+        {% for item in item_include %}
+        <option value= "{{item}}" SELECTED>{{item}}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <br>
+    <input class="btn" type="Submit" value="submit"> </input>
+</form>
+
