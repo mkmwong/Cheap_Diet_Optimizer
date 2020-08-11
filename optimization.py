@@ -20,7 +20,7 @@ tree_nut_food_code = [42200500,42101000,42104110,42107000,42113000,42109100,4250
 soybean_food_code = [41420010, 41107000, 41420380, 41810400,41811400,41811600,41811800,41410010]
 gluten_code = [4004, 4202] 
 other_code = list(set(df['WWEIA.Category.code'])- set(meat_code+dairy_code + fish_code + egg_code + oil_code + shellfish_code ))
-allergies = ['Dairy','Egg','Peanut','Shellfish','Fish','Tree nut', 'Soy', 'Gluten']
+allergies = ['Dairy','Egg','Peanut','Shellfish','Fish','Tree nut', 'Soy', 'Gluten','No Selection']
 
 ### setup basic nutrition; could allow manually designated value later ###
 def nutrition_setup(prob,food_vars):
@@ -73,13 +73,17 @@ def vitamin_setup(prob,food_vars,diet_type):
 
 ### other serving size limitations
 def others_setup(prob,food_vars, diet_type, idx):
-    print('in here')
     for i in range(0,len(df['WWEIA.Category.code'])):
         prob += food_vars[food[i]] <= 100 * selected[food[i]], food[i]+'_connect selected with food amount'
         prob += food_vars[food[i]] >= 0.0694 * selected[food[i]], food[i]+'_min_connect selected with food amount'
         ### if the item is specified to be included or excluded by the user,
         ### do not set it again in this function!
-        if idx == True and i in idx:
+        print('here')
+        print(i)
+        print(idx == True)
+        print(i in idx)
+        if len(idx)>0 and i in idx:
+            print('hello there')
             continue
         ### setting up meat requirement based on diet type
         elif df['WWEIA.Category.code'][i] in meat_code:
@@ -132,8 +136,6 @@ def others_setup(prob,food_vars, diet_type, idx):
             elif df['Food.code'][i] == 75120000:
                 prob += food_vars[food[i]] == 1 * selected[food[i]] , food[i]+'Min. serving size restriction'
             else:
-                print(food[i])
-                print(7)
                 prob += food_vars[food[i]] >= 0.5 * selected[food[i]] , food[i]+'Min. serving size restriction'
                 prob += food_vars[food[i]] <= 1.5 * selected[food[i]] , food[i]+'Max. serving size restriction'
 

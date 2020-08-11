@@ -8,7 +8,6 @@ def dropdown_diet_type():
     item_include = list(df['Main.food.description'])
     item_include.append('No Selection')
     allergy =  allergies
-    allergy.append('No Selection')
     return render_template('diet_type.html', diet=diets, item_include = item_include, allergy = allergy)
 
 @app.route('/diet_out', methods=['POST'])
