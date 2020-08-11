@@ -18,13 +18,11 @@ def show_diet():
         item_inc = request.form['item_include']
         item_exc = request.form['item_exclude']
         allergy_group = request.form['allergy']
-        print(allergy_group)
         string = diet_problem(diet, item_inc, item_exc, allergy_group)
         diets = ['Regular', 'Vegan', 'Vegetarian', 'Pescatarian']
         item_include = list(df['Main.food.description'])
         item_include.append('No Selection') 
-        allergy =  allergies
-        allergy.append('No Selection')
+        allergy = allergies
         return render_template('diet_output.html', string=string, diet=diets, item_include = item_include, allergy = allergy)
 
 @app.route('/limitations')

@@ -131,6 +131,7 @@ def others_setup(prob,food_vars, diet_type, idx):
                 prob += food_vars[f_name[i]] <= 1.2 * selected[f_name[i]] , f_name[i]+'Max. serving size restriction'
             ### vegetables serving size limitation
             elif df['WWEIA.Category.code'][i] in [6420]:
+                prob += food_vars[f_name[i]] >= 0.5 * selected[f_name[i]] , f_name[i]+'Min. serving size restriction'
                 prob += food_vars[f_name[i]] <= 1.2 * selected[f_name[i]] , f_name[i]+'Max. serving size restriction'
             ### pea limitation
             elif df['Food.code'][i] == 75120000:
@@ -227,7 +228,7 @@ def diet_problem(diet_type,item_inc=None, item_exc=None, allergy_group=None):
         if(detect_conflict(diet_type, item_inc)):
             return(['There is conflict with your selections. Please try again.'])
     prob = LpProblem('Cheap Diet Problem',  LpMinimize)
-    food_vars = LpVariable.dicts('food', food, lowBound = 0, upBound = 10, cat = 'Continuous')
+    food_vars = LpVariable.dicts('food', food, lowBound = 0, upBound = 2, cat = 'Continuous')
     nutrition_setup(prob,food_vars)
     mineral_setup(prob,food_vars)
     vitamin_setup(prob,food_vars,diet_type)
