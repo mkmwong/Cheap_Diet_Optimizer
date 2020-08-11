@@ -18,12 +18,15 @@
         </nav></strong>
       </div>
     </header>
-<div class="input_form">
-    {% include "content.html" %}
-</div>
 <div class="content">
-    {% block content %}
-    {% endblock %}
+    <div>
+        <h4>Data source:</h4>
+        <ul>
+          <li>Nutrient data could be found <a href="https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fndds-download-databases/">here (FNDDS 2015-2016)</a>.</li>
+          <li>Price data could be found <a href="https://www.fns.usda.gov/cnpp/usda-food-plans-cost-food-reports"> here (CNPP 2003-2004)</a>.</li>
+          <li>Vitamin and mineral requirement could be found <a href="https://www.accessdata.fda.gov/scripts/interactivenutritionfactslabel/assets/InteractiveNFL_Vitamins&MineralsChart_March2020.pdf">here</a>.</li>
+        </ul>
+      </div>
 </div>
 </body>
 </html>

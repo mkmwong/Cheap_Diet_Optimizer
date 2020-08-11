@@ -6,12 +6,11 @@ warnings.filterwarnings('ignore')
 
 ### importing dataframe with condensed nutrition and price data###
 df = pd.read_csv('summary_price_nutri_condense_nofilter_minimized.csv', error_bad_lines = False)
-food = df['interaction']
-
+food = df['Main.food.description']
 ### define list of code for classes of food ###
 selected = LpVariable.dicts('selected', food, lowBound = 0, upBound = 1, cat = 'Binary')
 meat_code = [2002,2004,2006,2008,2010,2202,2204,2206,2502,2602,2604,2606,2608]
-dairy_code = [1602,1820]
+dairy_code = [1602,1820,8006]
 fish_code = [2402]
 shellfish_code = [2404]
 egg_code = [2502]
@@ -39,13 +38,13 @@ def nutrition_setup(prob,food_vars):
     prob += lpSum([df['Carbohydrate'][i] * food_vars[food[i]] for i in range(0,len(food))]) <= 325, 'Max. Carbohydrate Intake'
     prob += lpSum([df['Fiber'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 12, 'Min. Dietary Fiber Intake'
     prob += lpSum([df['Fiber'][i] * food_vars[food[i]] for i in range(0,len(food))]) <= 40, 'Max. Dietary Fiber Intake'
-    prob += lpSum([df['Sugars'][i] * food_vars[food[i]] for i in range(0,len(food))]) <= 65, 'Max. Sugar Intake'
+    prob += lpSum([df['Sugars'][i] * food_vars[food[i]] for i in range(0,len(food))]) <= 60, 'Max. Sugar Intake'
 
 ### setup mineral requirement; could allow manually designated value later ###
 def mineral_setup(prob,food_vars):
     print('setting up mineral conditions...')
     prob += lpSum([df['Iron'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 18, 'Min. Iron Intake'
-    prob += lpSum([df['Calcium'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 1300, 'Min. Calcium Intake'
+    prob += lpSum([df['Calcium'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 1000, 'Min. Calcium Intake'
     prob += lpSum([df['Magnesium'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 420, 'Min. Magnesium Intake'
     prob += lpSum([df['Zinc'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 15, 'Min. Zinc Intake'
     prob += lpSum([df['Copper'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 0.9, 'Min. Copper Intake'
@@ -74,71 +73,69 @@ def vitamin_setup(prob,food_vars,diet_type):
 
 ### other serving size limitations
 def others_setup(prob,food_vars, diet_type, idx):
-    f_name = df['interaction']
+    print('in here')
     for i in range(0,len(df['WWEIA.Category.code'])):
-        prob += food_vars[f_name[i]] <= 100 * selected[f_name[i]], f_name[i]+'_connect selected with food amount'
+        prob += food_vars[food[i]] <= 100 * selected[food[i]], food[i]+'_connect selected with food amount'
+        prob += food_vars[food[i]] >= 0.0694 * selected[food[i]], food[i]+'_min_connect selected with food amount'
         ### if the item is specified to be included or excluded by the user,
         ### do not set it again in this function!
-        if idx != None:
-            if isinstance(idx, int):
-                if i == idx:
-                    pass
-            else:
-                if i in idx:
-                    pass
+        if idx == True and i in idx:
+            continue
         ### setting up meat requirement based on diet type
         elif df['WWEIA.Category.code'][i] in meat_code:
             if diet_type == 'Vegan' or diet_type == 'Vegetarian' or diet_type == 'Pescatarian':
-                prob += selected[f_name[i]] == 0
+                prob += selected[food[i]] == 0
             else:
-                prob += food_vars[f_name[i]] == 1 * selected[f_name[i]] , f_name[i]+'Min. serving size restriction'
+                prob += food_vars[food[i]] == 1 * selected[food[i]] , food[i]+'Min. serving size restriction'
         ### setting up fish requirement based on diet type
         elif df['WWEIA.Category.code'][i] in fish_code:
             if diet_type == 'Vegan' or diet_type == 'Vegetarian':
-                prob += selected[f_name[i]] == 0
+                prob += selected[food[i]] == 0
             else:
-                prob += food_vars[f_name[i]] == 1 * selected[f_name[i]] , f_name[i]+'Min. serving size restriction'
+                prob += food_vars[food[i]] == 1 * selected[food[i]] , food[i]+'Min. serving size restriction'
         ### setting up egg and dairy requirement based on diet type
         elif df['WWEIA.Category.code'][i] in dairy_code + egg_code:
             if diet_type == 'Vegan':
-                prob += selected[f_name[i]] == 0
+                prob += selected[food[i]] == 0
             else:
                 if df['WWEIA.Category.code'][i] in [1820]:
-                    prob += food_vars[f_name[i]] == 1 * selected[f_name[i]] , f_name[i]+'Min. serving size restriction'
+                    prob += food_vars[food[i]] == 1 * selected[food[i]] , food[i]+'Min. serving size restriction'
                 else:
-                    prob += food_vars[f_name[i]] >= 0.5 * selected[f_name[i]] , f_name[i]+'Min. serving size restriction'
-                    prob += food_vars[f_name[i]] <= 2 * selected[f_name[i]] , f_name[i]+'Max. serving size restriction'
+                    prob += food_vars[food[i]] >= 0.5 * selected[food[i]] , food[i]+'Min. serving size restriction'
+                    prob += food_vars[food[i]] <= 2 * selected[food[i]] , food[i]+'Max. serving size restriction'
         ### required some amount of oil for cooking
         elif df['WWEIA.Category.code'][i] in oil_code:
-            prob += selected[f_name[i]] == 1
-            prob += food_vars[f_name[i]] >= 0.0694 * selected[f_name[i]] , f_name[i]+'Min. serving size restriction'
-            prob += food_vars[f_name[i]] <= 0.1389 * selected[f_name[i]] , f_name[i]+'Max. serving size restriction'
+            prob += selected[food[i]] == 1
+            prob += food_vars[food[i]] >= 0.0694 * selected[food[i]] , food[i]+'Min. serving size restriction'
+            prob += food_vars[food[i]] <= 0.1389 * selected[food[i]] , food[i]+'Max. serving size restriction'
         ### currently not supporting shellfish because it's making user eats a disgusting amount of oyster
         elif df['WWEIA.Category.code'][i] in shellfish_code:
-            prob += selected[f_name[i]] == 0
+            prob += selected[food[i]] == 0
         else:
             ### lemon and lime serving size limitation
             if df['Food.code'][i] == 61113010 or df['Food.code'][i] == 61116010:
-                prob += food_vars[f_name[i]] >= 0.1 * selected[f_name[i]] , f_name[i]+'Min. serving size restriction'
-                prob += food_vars[f_name[i]] <= 0.5 * selected[f_name[i]] , f_name[i]+'Max. serving size restriction'
+                prob += food_vars[food[i]] >= 0.1 * selected[food[i]] , food[i]+'Min. serving size restriction'
+                prob += food_vars[food[i]] <= 0.5 * selected[food[i]] , food[i]+'Max. serving size restriction'
             ### lettuce serving size limitation
             elif df['Food.code'][i] == 75113060:
-                prob += food_vars[f_name[i]] >= 0.3 * selected[f_name[i]] , f_name[i]+'Min. serving size restriction'
-                prob += food_vars[f_name[i]] <= 0.7 * selected[f_name[i]] , f_name[i]+'Max. serving size restriction'
+                prob += food_vars[food[i]] >= 0.3 * selected[food[i]] , food[i]+'Min. serving size restriction'
+                prob += food_vars[food[i]] <= 0.7 * selected[food[i]] , food[i]+'Max. serving size restriction'
             ### carb serving size limitation
             elif df['WWEIA.Category.code'][i] in [4002, 4004, 4202, 4204,4206,4208]:
-                prob += food_vars[f_name[i]] >= 0.8 * selected[f_name[i]] , f_name[i]+'Min. serving size restriction'
-                prob += food_vars[f_name[i]] <= 1.2 * selected[f_name[i]] , f_name[i]+'Max. serving size restriction'
+                prob += food_vars[food[i]] >= 0.8 * selected[food[i]] , food[i]+'Min. serving size restriction'
+                prob += food_vars[food[i]] <= 1.2 * selected[food[i]] , food[i]+'Max. serving size restriction'
             ### vegetables serving size limitation
             elif df['WWEIA.Category.code'][i] in [6420]:
-                prob += food_vars[f_name[i]] >= 0.5 * selected[f_name[i]] , f_name[i]+'Min. serving size restriction'
-                prob += food_vars[f_name[i]] <= 1.2 * selected[f_name[i]] , f_name[i]+'Max. serving size restriction'
+                prob += food_vars[food[i]] >= 0.5 * selected[food[i]] , food[i]+'Min. serving size restriction'
+                prob += food_vars[food[i]] <= 1.2 * selected[food[i]] , food[i]+'Max. serving size restriction'
             ### pea limitation
             elif df['Food.code'][i] == 75120000:
-                prob += food_vars[f_name[i]] == 1 * selected[f_name[i]] , f_name[i]+'Min. serving size restriction'
+                prob += food_vars[food[i]] == 1 * selected[food[i]] , food[i]+'Min. serving size restriction'
             else:
-                prob += food_vars[f_name[i]] >= 0.5 * selected[f_name[i]] , f_name[i]+'Min. serving size restriction'
-                prob += food_vars[f_name[i]] <= 1.5 * selected[f_name[i]] , f_name[i]+'Max. serving size restriction'
+                print(food[i])
+                print(7)
+                prob += food_vars[food[i]] >= 0.5 * selected[food[i]] , food[i]+'Min. serving size restriction'
+                prob += food_vars[food[i]] <= 1.5 * selected[food[i]] , food[i]+'Max. serving size restriction'
 
 ### setting limitation in number of servings
 def serving_num_limit(prob):
@@ -155,8 +152,11 @@ def format_output(prob_var, food_des, portion_weight):
     ret_str = []
     for i in range(len(food_des)):
         if prob_var[i].varValue > 0:
+            tmp = list(prob_var[i].name)[5:]
+            tmp = ''.join(tmp)
+            tmp = tmp.replace("_"," ")
             weight = round(prob_var[i].varValue * portion_weight[i])
-            ret_str.append( str(food_des[i] + ": " + str(weight) + 'g'))
+            ret_str.append( tmp + ": " + str(weight) + 'g')
     return(ret_str)
 
 ### For detecting any conflicts between diet choice and item choice
@@ -173,12 +173,12 @@ def detect_conflict(diet_type, item_inc):
 
 ### For including or item that user selects to include
 def include_or_exclude_item(prob, food_vars, idx, type_it):
-    print(df['Main.food.description'][idx])
+    print(df['Main.food.description'][idx[0]])
     if type_it == 'include':
-        prob += selected[df['interaction'][idx]] == 1
-        prob += food_vars[df['interaction'][idx]] >= 0.5 * selected[df['interaction'][idx]] , df['interaction'][idx]+'Min. serving size restriction'
+        prob += selected[df['Main.food.description'][idx[0]]] == 1
+        prob += food_vars[df['Main.food.description'][idx[0]]] >= 0.5 * selected[df['Main.food.description'][idx[0]]] , df['Main.food.description'][idx[0]]+'Min. serving size restriction'
     elif type_it == 'exclude':
-        prob += selected[df['interaction'][idx]] == 0
+        prob += selected[df['Main.food.description'][idx[0]]] == 0
 
 ### For excluding item that people are allergic to 
 def exclude_allergies(prob, food_vars, group):
@@ -187,44 +187,43 @@ def exclude_allergies(prob, food_vars, group):
         for i in range(len(df['WWEIA.Category.code'])):
             if df['WWEIA.Category.code'][i] in dairy_code:
                 idx.append(i)
-                prob += selected[df['interaction'][i]] == 0
+                prob += selected[df['Main.food.description'][i]] == 0
     elif group == 'Egg':
         for i in range(len(df['WWEIA.Category.code'])):
             if df['WWEIA.Category.code'][i] in egg_code:
                 idx.append(i)
-                prob += selected[df['interaction'][i]] == 0
+                prob += selected[df['Main.food.description'][i]] == 0
     elif group == 'Peanut':
         for i in range(len(df['WWEIA.Category.code'])):
             if df['Food.code'][i] in peanut_food_code:
                 idx.append(i)
-                prob += selected[df['interaction'][i]] == 0
+                prob += selected[df['Main.food.description'][i]] == 0
     elif group == 'Shellfish':
         for i in range(len(df['WWEIA.Category.code'])):
             if df['WWEIA.Category.code'][i] in shellfish_code:
                 idx.append(i)
-                prob += selected[df['interaction'][i]] == 0
+                prob += selected[df['Main.food.description'][i]] == 0
     elif group == 'Fish':
         for i in range(len(df['WWEIA.Category.code'])):
             if df['WWEIA.Category.code'][i] in fish_code:
                 idx.append(i)
-                prob += selected[df['interaction'][i]] == 0
+                prob += selected[df['Main.food.description'][i]] == 0
     elif group == 'Tree nut':
         for i in range(len(df['WWEIA.Category.code'])):
             if df['Food.code'][i] in tree_nut_food_code:
                 idx.append(i)
-                prob += selected[df['interaction'][i]] == 0
+                prob += selected[df['Main.food.description'][i]] == 0
     elif group == 'Soy':
         for i in range(len(df['WWEIA.Category.code'])):
             if df['Food.code'][i] in soybean_food_code:
                 idx.append(i)
-                prob += selected[df['interaction'][i]] == 0 
+                prob += selected[df['Main.food.description'][i]] == 0 
     return(idx)
 
 ### Function to solve the cheap diet problem
 def diet_problem(diet_type,item_inc=None, item_exc=None, allergy_group=None):
-    idx = None
+    idx = []
     if item_inc != 'No Selection':
-        idx = list(df['Main.food.description']).index(item_inc)
         if(detect_conflict(diet_type, item_inc)):
             return(['There is conflict with your selections. Please try again.'])
     prob = LpProblem('Cheap Diet Problem',  LpMinimize)
@@ -233,14 +232,15 @@ def diet_problem(diet_type,item_inc=None, item_exc=None, allergy_group=None):
     mineral_setup(prob,food_vars)
     vitamin_setup(prob,food_vars,diet_type)
     if item_inc != 'No Selection':
+        idx.extend([list(df['Main.food.description']).index(item_inc)])
         include_or_exclude_item(prob, food_vars, idx, 'include')
     if item_exc != 'No Selection':
-        idx2 = list(df['Main.food.description']).index(item_exc)
+        idx2 = [list(df['Main.food.description']).index(item_exc)]
         include_or_exclude_item(prob, food_vars, idx2, 'exclude')
-        idx = [idx, idx2]
+        idx.extend(idx2)
     if allergy_group != 'No Selection':
         allergy_idx = exclude_allergies(prob, food_vars, allergy_group)
-        idx = [idx, allergy_idx]
+        idx.extend(allergy_idx)
     others_setup(prob,food_vars,diet_type, idx)
     serving_num_limit(prob)
     prob.solve()

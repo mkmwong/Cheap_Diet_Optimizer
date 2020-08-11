@@ -25,6 +25,10 @@ def show_diet():
         allergy = allergies
         return render_template('diet_output.html', string=string, diet=diets, item_include = item_include, allergy = allergy)
 
+@app.route('/data_source')
+def show_data_source():
+    return render_template('data_source.html')
+
 @app.route('/limitations')
 def show_limit():
     return render_template('limitation.html')
