@@ -46,7 +46,7 @@ def mineral_setup(prob,food_vars):
     prob += lpSum([df['Iron'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 18, 'Min. Iron Intake'
     prob += lpSum([df['Calcium'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 1000, 'Min. Calcium Intake'
     prob += lpSum([df['Magnesium'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 420, 'Min. Magnesium Intake'
-    prob += lpSum([df['Zinc'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 15, 'Min. Zinc Intake'
+    prob += lpSum([df['Zinc'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 10, 'Min. Zinc Intake'
     prob += lpSum([df['Copper'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 0.9, 'Min. Copper Intake'
     prob += lpSum([df['Selenium'][i] * food_vars[food[i]]for i in range(0,len(food))]) >= 55, 'Min. Selenium Intake'
     prob += lpSum([df['Potassium'][i] * food_vars[food[i]] for i in range(0,len(food))]) >= 4700, 'Min. Potassium Intake'
@@ -78,12 +78,7 @@ def others_setup(prob,food_vars, diet_type, idx):
         prob += food_vars[food[i]] >= 0.0694 * selected[food[i]], food[i]+'_min_connect selected with food amount'
         ### if the item is specified to be included or excluded by the user,
         ### do not set it again in this function!
-        print('here')
-        print(i)
-        print(idx == True)
-        print(i in idx)
         if len(idx)>0 and i in idx:
-            print('hello there')
             continue
         ### setting up meat requirement based on diet type
         elif df['WWEIA.Category.code'][i] in meat_code:
