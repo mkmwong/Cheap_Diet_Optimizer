@@ -9,7 +9,7 @@ df = pd.read_csv('summary_price_nutri_condense_nofilter_minimized.csv', error_ba
 food = df['Main.food.description']
 ### define list of code for classes of food ###
 selected = LpVariable.dicts('selected', food, lowBound = 0, upBound = 1, cat = 'Binary')
-meat_code = [2002,2004,2006,2008,2010,2202,2204,2206,2502,2602,2604,2606,2608]
+meat_code = [2002,2004,2006,2008,2010,2202,2204,2206,2602,2604,2606,2608]
 dairy_code = [1602,1820,8006]
 fish_code = [2402]
 shellfish_code = [2404]
