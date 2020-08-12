@@ -18,7 +18,7 @@ oil_code = [8012]
 peanut_food_code = [42110100, 42202000,42203000, 42111210]
 tree_nut_food_code = [42200500,42101000,42104110,42107000,42113000,42109100,42501000]
 soybean_food_code = [41420010, 41107000, 41420380, 41810400,41811400,41811600,41811800,41410010]
-gluten_code = [4004, 4202] 
+gluten_code = [4004, 4202,  4206, 4208, 4402, 5202, 5204] 
 other_code = list(set(df['WWEIA.Category.code'])- set(meat_code+dairy_code + fish_code + egg_code + oil_code + shellfish_code ))
 allergies = ['Dairy','Egg','Peanut','Shellfish','Fish','Tree nut', 'Soy', 'Gluten','No Selection']
 
@@ -183,6 +183,11 @@ def exclude_allergies(prob, food_vars, group):
     if group == 'Dairy':  
         for i in range(len(df['WWEIA.Category.code'])):
             if df['WWEIA.Category.code'][i] in dairy_code:
+                idx.append(i)
+                prob += selected[df['Main.food.description'][i]] == 0
+    elif group == 'Gluten':  
+        for i in range(len(df['WWEIA.Category.code'])):
+            if df['WWEIA.Category.code'][i] in gluten_code:
                 idx.append(i)
                 prob += selected[df['Main.food.description'][i]] == 0
     elif group == 'Egg':
